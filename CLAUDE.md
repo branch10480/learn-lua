@@ -30,7 +30,12 @@ basics/
 ├── 02_control_flow/   # 制御構造（if, for, while）
 ├── 03_functions/      # 関数
 └── 04_tables/         # テーブル（最重要）
-advanced/              # メタテーブル、コルーチン等（未作成）
+advanced/
+├── 01_modules/        # モジュールとrequire
+├── 02_error_handling/ # エラーハンドリング（pcall, xpcall）
+├── 03_metatables/     # メタテーブルとメタメソッド
+├── 04_oop/            # OOPパターン（クラス、継承）
+└── 05_coroutines/     # コルーチン
 neovim/                # Neovim API練習（未作成）
 config/                # 実際のNeovim設定の練習（未作成）
 ```
