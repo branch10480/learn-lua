@@ -28,6 +28,26 @@ print("メタテーブル:", getmetatable(t) == mt)  --> true
 -- setmetatable は設定したテーブル自身を返す（チェーンできる）
 local t2 = setmetatable({}, {})
 
+-- ★ 重要: メタテーブルの構造
+-- メタテーブルは「メタメソッド」を格納するテーブル
+-- メタメソッドは特別な名前のキー (__index, __newindex, __add, __call など)
+-- 必要なメタメソッドだけを定義すればOK（全て必須ではない）
+-- 例: { __index = ... }              -- __index だけ
+--     { __call = ... }               -- __call だけ
+--     { __index = ..., __add = ... } -- 複数のメタメソッド
+
+-- ★ __index を使った継承・チェーンを作る場合の注意点:
+-- ❌ 間違い: 通常のテーブルを直接メタテーブルとして渡す
+-- local parent = { x = 1 }
+-- local child = setmetatable({ y = 2 }, parent)  -- parent.__index が未定義
+
+-- ✅ 正しい方法1: メタテーブルに __index フィールドを設定
+-- local child = setmetatable({ y = 2 }, { __index = parent })
+
+-- ✅ 正しい方法2: テーブル自身に __index を設定してからメタテーブルとして使う
+-- parent.__index = parent
+-- local child = setmetatable({ y = 2 }, parent)
+
 -- ========================================
 -- __index: キーが存在しないとき
 -- ========================================
