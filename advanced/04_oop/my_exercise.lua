@@ -17,6 +17,14 @@ local Animal = {}
 Animal.__index = Animal
 
 -- ここから下に実装
+function Animal.new(name, sound)
+  local new = setmetatable({ name = name, sound = sound }, Animal)
+  return new
+end
+
+function Animal:speak()
+  return self.name .. " says " .. self.sound
+end
 
 -- ここまで
 
@@ -37,7 +45,13 @@ print("問題1: OK")
 -- Animal:get_info(): "<name> (<sound>)" を返す
 
 -- ここから下に実装
+function Animal:rename(new_name)
+  self.name = new_name
+end
 
+function Animal:get_info()
+  return self.name .. " (" .. self.sound .. ")"
+end
 -- ここまで
 
 cat:rename("タマ")
@@ -58,7 +72,17 @@ local Dog = setmetatable({}, Animal)
 Dog.__index = Dog
 
 -- ここから下に実装
+function Dog.new(name, breed)
+  return setmetatable({ name = name, breed = breed, sound = "ワン!" }, Dog)
+end
 
+function Dog:speak()
+  return self.name .. "(" .. self.breed .. ") says " .. self.sound
+end
+
+function Dog:fetch(item)
+  return self.name .. " fetches " .. item
+end
 -- ここまで
 
 local shiba = Dog.new("タロウ", "柴犬")
@@ -80,7 +104,13 @@ local Cat = setmetatable({}, Animal)
 Cat.__index = Cat
 
 -- ここから下に実装
+function Cat.new(name, lives)
+  return setmetatable({ name = name, lives = lives or 9, sound = "ニャー"}, Cat)
+end
 
+function Cat:speak()
+  return Animal.speak(self) .. " (残り" .. self.lives .. "命)"
+end
 -- ここまで
 
 local neko = Cat.new("クロ", 7)
@@ -104,7 +134,33 @@ local Shelter = {}
 Shelter.__index = Shelter
 
 -- ここから下に実装
+function Shelter.new(name)
+  return setmetatable({ name = name, animals = {} }, Shelter)
+end
 
+function Shelter:add(animal)
+  table.insert(self.animals, animal)
+end
+
+function Shelter:count()
+  local count = 0
+  for _, _ in ipairs(self.animals) do
+    count = count + 1
+  end
+  return count
+end
+
+function Shelter:list_names()
+  local names = ""
+  for _, animal in ipairs(self.animals) do
+    if names == "" then
+      names = names .. animal.name
+    else
+      names = names .. ", " .. animal.name
+    end
+  end
+  return names
+end
 -- ここまで
 
 local shelter = Shelter.new("ハッピーシェルター")
