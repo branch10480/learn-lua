@@ -181,7 +181,11 @@ print("問題5: OK")
 -- これにより多重継承風の機能追加ができる
 
 local function mixin(target, source)
-  -- ここを実装
+  for k, v in pairs(source) do
+    if type(v) == "function" then
+      target[k] = v
+    end
+  end
 end
 
 -- Serializable ミックスイン: to_string() メソッドを提供
@@ -246,6 +250,45 @@ Logger.__index = Logger
 local LEVELS = { DEBUG = 1, INFO = 2, WARN = 3, ERROR = 4 }
 
 -- ここから下に実装
+function Logger.new(name, level_key)
+  local level = LEVELS[level_key] or LEVELS.INFO
+  return setmetatable({ name = name, level = level, logs = {} }, Logger)
+end
+
+function Logger:log(level, message)
+  if LEVELS[level] == nil then return end
+  if self.level <= LEVELS[level] then
+    -- tostring()を使わないとmessageがnilで落ちる
+    table.insert(self.logs, "[" .. level .. "] " .. self.name .. ": " .. tostring(message))
+  end
+end
+
+function Logger:debug(message)
+  self:log("DEBUG", message)
+end
+
+function Logger:info(message)
+  self:log("INFO", message)
+end
+
+function Logger:warn(message)
+  self:log("WARN", message)
+end
+
+function Logger:error(message)
+  self:log("ERROR", message)
+end
+
+function Logger:get_logs()
+  return self.logs
+end
+
+function Logger:child(child_name)
+  local new = Logger.new(self.name .. "." .. child_name)
+  new.level = self.level
+  new.logs = self:get_logs()
+  return new
+end
 
 -- ここまで
 
