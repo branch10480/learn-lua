@@ -15,7 +15,11 @@
 local co = nil  -- ここを修正
 
 -- ここから下に実装
-
+co = coroutine.create(function ()
+  coroutine.yield(1)
+  coroutine.yield(2)
+  return 3
+end)
 -- ここまで
 
 local ok1, v1 = coroutine.resume(co)
@@ -38,7 +42,15 @@ print("問題1: OK")
 local doubler = nil  -- ここを修正
 
 -- ここから下に実装
-
+doubler = coroutine.create(function (x)
+  local counter = 1
+  local num = x
+  while true do
+    if counter == 3 then return num * 2 end
+    num = coroutine.yield(num * 2)
+    counter = counter + 1
+  end
+end)
 -- ここまで
 
 local _, r1 = coroutine.resume(doubler, 5)
@@ -61,7 +73,18 @@ print("問題2: OK")
 -- ヒント: string.byte で文字→数値、string.char で数値→文字
 
 local function letters(start, finish)
-  -- ここを実装
+  return coroutine.wrap(function ()
+    local c = start
+    while true do
+      coroutine.yield(c)
+
+      if c == finish then
+        return nil
+      end
+
+      c = string.char(string.byte(c) + 1)
+    end
+  end)
 end
 
 local result3 = {}
