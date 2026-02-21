@@ -36,7 +36,12 @@ advanced/
 ├── 03_metatables/     # メタテーブルとメタメソッド
 ├── 04_oop/            # OOPパターン（クラス、継承）
 └── 05_coroutines/     # コルーチン
-neovim/                # Neovim API練習（未作成）
+neovim/
+├── 01_vim_api/        # vim.api の基本（バッファ・ウィンドウ操作）
+├── 02_vim_opt/        # vim.opt（オプション設定）
+├── 03_vim_keymap/     # vim.keymap（キーマッピング）
+├── 04_vim_fn/         # vim.fn（Vimscript関数呼び出し）
+└── 05_autocmd/        # autocmd と augroup
 config/                # 実際のNeovim設定の練習（未作成）
 ```
 
@@ -45,12 +50,17 @@ config/                # 実際のNeovim設定の練習（未作成）
 各レッスンには `lesson.lua`（解説）と `exercise.lua`（演習）がある。
 
 ```bash
-# 1. レッスンを読んで実行
+# 1. レッスンを読んで実行（basics / advanced）
 cd basics/01_variables
 lua lesson.lua
 
 # 2. 演習問題を解く（TODOを埋める）
 lua exercise.lua
+
+# 3. Neovim API教材の実行（neovim/）
+cd neovim/01_vim_api
+nvim -l lesson.lua
+nvim -l exercise.lua
 ```
 
 演習は全て `assert` でチェックされ、正しく実装すると「全ての問題をクリアしました！」と表示される。
