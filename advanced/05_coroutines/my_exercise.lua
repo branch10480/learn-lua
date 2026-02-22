@@ -43,13 +43,10 @@ local doubler = nil  -- ここを修正
 
 -- ここから下に実装
 doubler = coroutine.create(function (x)
-  local counter = 1
   local num = x
-  while true do
-    if counter == 3 then return num * 2 end
-    num = coroutine.yield(num * 2)
-    counter = counter + 1
-  end
+  num = coroutine.yield(num * 2)
+  num = coroutine.yield(num * 2)
+  return num * 2
 end)
 -- ここまで
 
@@ -255,13 +252,12 @@ function Scheduler:add_task(func)
 end
 
 function Scheduler:run()
-  local co_count = #self.tasks
-  local dead_count = 0
   while true do
+    local all_dead = true
+
     for _, co in ipairs(self.tasks) do
-      if coroutine.status(co) == "dead" then
-        dead_count = dead_count + 1
-      else
+      if coroutine.status(co) ~= "dead" then
+        all_dead = false
         local _, message = coroutine.resume(co)
         if message ~= nil then
           table.insert(self.logs, message)
@@ -269,11 +265,7 @@ function Scheduler:run()
       end
     end
 
-    if dead_count == co_count then
-      break
-    end
-
-    dead_count = 0
+    if all_dead then break end
   end
 end
 
