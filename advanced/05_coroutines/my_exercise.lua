@@ -110,7 +110,17 @@ print("問題3: OK")
 -- start から stop まで step ずつ増加する値を yield
 
 local function range(start, stop, step)
-  -- ここを実装
+  return coroutine.wrap(function ()
+    local i = start
+    local step = step or 1
+    while true do
+      coroutine.yield(i)
+      if i + step > stop then
+        return nil
+      end
+      i = i + step
+    end
+  end)
 end
 
 local r4a = {}
@@ -146,11 +156,23 @@ local function from_table(t)
 end
 
 local function filter_co(source, predicate)
-  -- ここを実装
+  return coroutine.wrap(function ()
+    for v in source do
+      if predicate(v) then
+        coroutine.yield(v)
+      end
+    end
+    return nil
+  end)
 end
 
 local function map_co(source, transform)
-  -- ここを実装
+  return coroutine.wrap(function ()
+    for v in source do
+      coroutine.yield(transform(v))
+    end
+    return nil
+  end)
 end
 
 -- パイプライン: [1..8] → 奇数のみ → 3倍
@@ -180,7 +202,19 @@ print("問題5: OK")
 -- coroutine.wrap を使う
 
 local function create_traffic_light()
-  -- ここを実装
+  return coroutine.wrap(function ()
+    local states = {
+      "green",
+      "yellow",
+      "red",
+    }
+    local i = 1
+    while true do
+      coroutine.yield(states[i])
+      i = i + 1
+      if i > 3 then i = 1 end
+    end
+  end)
 end
 
 local next_state = create_traffic_light()
@@ -212,6 +246,40 @@ local Scheduler = {}
 Scheduler.__index = Scheduler
 
 -- ここから下に実装
+function Scheduler.new()
+  return setmetatable({ tasks = {}, logs = {} }, Scheduler)
+end
+
+function Scheduler:add_task(func)
+  table.insert(self.tasks, coroutine.create(func))
+end
+
+function Scheduler:run()
+  local co_count = #self.tasks
+  local dead_count = 0
+  while true do
+    for _, co in ipairs(self.tasks) do
+      if coroutine.status(co) == "dead" then
+        dead_count = dead_count + 1
+      else
+        local _, message = coroutine.resume(co)
+        if message ~= nil then
+          table.insert(self.logs, message)
+        end
+      end
+    end
+
+    if dead_count == co_count then
+      break
+    end
+
+    dead_count = 0
+  end
+end
+
+function Scheduler:get_log()
+  return self.logs
+end
 
 -- ここまで
 
